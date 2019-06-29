@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -21,7 +23,9 @@ import java.util.List;
 
 import es.dmoral.toasty.Toasty;
 
-public class WhatsAppClone extends AppCompatActivity {
+public class WhatsAppClone extends AppCompatActivity implements AdapterView.OnItemClickListener {
+
+    private  ArrayList<String> waUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +34,13 @@ public class WhatsAppClone extends AppCompatActivity {
 
         final SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeContainer);
         final ListView listView = findViewById(R.id.listView);
-        final ArrayList<String> waUsers = new ArrayList<>();
+        listView.setOnItemClickListener(this);
+
+        waUsers = new ArrayList<>();
         final ArrayAdapter adapter = new ArrayAdapter(WhatsAppClone.this,android.R.layout.simple_list_item_1,waUsers);
 
         try {
-            // adding users in listview from parse server
+            // adding users in listView from parse server
             ParseQuery<ParseUser> parseQuery = ParseUser.getQuery();
             parseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
 
@@ -47,7 +53,7 @@ public class WhatsAppClone extends AppCompatActivity {
                         }
                         listView.setAdapter(adapter);
                     } else {
-                        Toasty.error(WhatsAppClone.this, e.getMessage(), Toasty.LENGTH_LONG, true).show();
+                        Toasty.info(WhatsAppClone.this, "Currently no users available", Toasty.LENGTH_LONG, true).show();
                     }
                 }
             });
@@ -112,5 +118,13 @@ public class WhatsAppClone extends AppCompatActivity {
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+        Intent intent = new Intent(WhatsAppClone.this,WhatsAppChatActivity.class);
+        intent.putExtra("selectedUser", waUsers.get(i));
+        startActivity(intent);
     }
 }
