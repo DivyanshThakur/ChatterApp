@@ -3,7 +3,9 @@ package com.example.whatsappclone;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -44,10 +46,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSignUp = findViewById(R.id.btnSignUpSA);
         btnLogIn = findViewById(R.id.btnLogInSA);
 
+        // setting the onKeyListener
+        edtPassword.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (i == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    onClick(btnSignUp);
+                }
+                return false;
+            }
+        });
+
         // setting the onClickListener
         btnSignUp.setOnClickListener(this);
         btnLogIn.setOnClickListener(this);
-
     }
 
     @Override
@@ -88,8 +100,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnLogInSA :
                 Intent intent = new Intent(MainActivity.this, LogInActivity.class);
                 startActivity(intent);
-                finish();
                 break;
+        }
+    }
+
+    public void rootLayoutTapped(View view) {
+        try {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),0);
+    } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
